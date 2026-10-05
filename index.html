@@ -5,28 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sage Haven 2026 Annual Report</title>
   <meta name="description" content="Sage Haven Society 2026 Annual Report">
+  <link rel="icon" href="assets/brand/logo-icon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/noto-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/flipbook.css">
+  <script>
+    // Embed mode: framed in another site, or ?embed in the URL. Hides site header/footer.
+    if (window.self !== window.top || /[?&]embed\b/.test(location.search)) document.documentElement.classList.add("is-embed");
+  </script>
 </head>
 <body>
-  <header class="toolbar" role="toolbar" aria-label="Flipbook controls">
-    <h1 class="toolbar__title" id="book-title">Sage Haven 2026 Annual Report</h1>
-    <div class="toolbar__nav">
-      <button type="button" id="btn-first" aria-label="First page" title="First page">&#x23EE;</button>
-      <button type="button" id="btn-prev" aria-label="Previous page" title="Previous page">&#x25C0;</button>
-      <span class="toolbar__count" aria-live="polite"><span id="page-current">–</span> / <span id="page-total">–</span></span>
-      <button type="button" id="btn-next" aria-label="Next page" title="Next page">&#x25B6;</button>
-      <button type="button" id="btn-last" aria-label="Last page" title="Last page">&#x23ED;</button>
-    </div>
-    <div class="toolbar__actions">
-      <a id="btn-download" class="btn" href="#" download hidden aria-label="Download PDF" title="Download PDF">&#x2B07;</a>
-      <button type="button" id="btn-fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">&#x26F6;</button>
-    </div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-first" viewBox="0 0 24 24"><path d="M18 6l-6 6 6 6M11 6l-6 6 6 6"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+    <symbol id="i-last" viewBox="0 0 24 24"><path d="M6 6l6 6-6 6M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+  </svg>
+
+  <header class="site-header">
+    <a class="site-header__logo" href="https://www.sagehavensociety.org/" aria-label="Sage Haven Society home">
+      <img src="assets/brand/logo-wordmark.svg" alt="Sage Haven — Understanding the Past, Building Futures" width="236" height="60">
+    </a>
+    <a class="site-header__link" href="https://www.sagehavensociety.org/">sagehavensociety.org</a>
   </header>
 
-  <main class="stage" id="stage">
-    <div class="status" id="status" role="status">Loading…</div>
-    <div class="book" id="book" hidden></div>
+  <main class="viewer">
+    <div class="viewer__intro">
+      <h1 id="book-title">Sage Haven 2026 Annual Report</h1>
+      <a id="btn-download" class="btn btn--primary" href="#" download hidden>
+        <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Download PDF</span>
+      </a>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="status" id="status" role="status">Loading…</div>
+      <div class="book" id="book" hidden></div>
+    </div>
+
+    <nav class="controls" aria-label="Report navigation">
+      <button type="button" id="btn-first" aria-label="First page" title="First page"><svg class="icon"><use href="#i-first"/></svg></button>
+      <button type="button" id="btn-prev" aria-label="Previous page" title="Previous page"><svg class="icon"><use href="#i-prev"/></svg></button>
+      <span class="controls__count" aria-live="polite"><span id="page-current">–</span> <span class="controls__of">of</span> <span id="page-total">–</span></span>
+      <button type="button" id="btn-next" aria-label="Next page" title="Next page"><svg class="icon"><use href="#i-next"/></svg></button>
+      <button type="button" id="btn-last" aria-label="Last page" title="Last page"><svg class="icon"><use href="#i-last"/></svg></button>
+      <span class="controls__sep" aria-hidden="true"></span>
+      <button type="button" id="btn-fullscreen" aria-label="Toggle fullscreen" title="Fullscreen"><svg class="icon"><use href="#i-expand"/></svg></button>
+    </nav>
   </main>
+
+  <footer class="site-footer">
+    <img src="assets/brand/logo-icon-reverse.svg" alt="" width="34" height="34">
+    <p>© 2026 Sage Haven Society</p>
+  </footer>
 
   <script src="vendor/page-flip/page-flip.browser.js"></script>
   <script src="js/config.js"></script>
