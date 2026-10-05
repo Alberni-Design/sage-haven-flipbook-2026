@@ -1,6 +1,6 @@
 // Flipbook settings. Edit this file only — no build step required.
 window.FLIPBOOK_CONFIG = {
-  title: "Sage Haven 2026",
+  title: "Sage Haven 2026 Annual Report",
 
   // Primary source: pre-rendered WebP pages + manifest.json, built by
   // `scripts/import-pages.sh <png-folder>` (or `scripts/pdf-to-images.sh <pdf>`).
@@ -12,6 +12,7 @@ window.FLIPBOOK_CONFIG = {
 
   // Show the PDF download button in the toolbar.
   allowDownload: true,
+  downloadName: "Sage Haven 2026 Annual Report.pdf",
 
   // Treat the first and last page as hard covers.
   hardCovers: true,

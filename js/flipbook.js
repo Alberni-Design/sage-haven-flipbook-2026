@@ -123,6 +123,7 @@ function setupToolbar(flip, count, labels) {
   const dl = $("btn-download");
   if (cfg.allowDownload && cfg.pdf) {
     dl.href = cfg.pdf;
+    if (cfg.downloadName) dl.download = cfg.downloadName;
     dl.hidden = false;
   }
 
