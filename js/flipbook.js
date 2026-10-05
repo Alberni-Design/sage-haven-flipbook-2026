@@ -21,14 +21,16 @@ async function loadImageSource(manifestUrl) {
   const manifest = await res.json();
   const base = new URL(manifestUrl, location.href);
   const urls = manifest.pages.map((p) => new URL(p, base).href);
+  const labels = manifest.labels;
 
   return {
     count: urls.length,
     aspect: manifest.height / manifest.width,
+    labels,
     render(index, pageEl) {
       const img = new Image();
       img.decoding = "async";
-      img.alt = `Page ${index + 1}`;
+      img.alt = labels ? labels[index] : `Page ${index + 1}`;
       img.src = urls[index];
       return img.decode().catch(() => {}).then(() => pageEl.replaceChildren(img));
     },
@@ -77,16 +79,19 @@ function pageFromHash(count) {
   return Math.min(Math.max(n, 1), count) - 1;
 }
 
-function setupToolbar(flip, count) {
+function setupToolbar(flip, count, labels) {
   const cur = $("page-current");
-  $("page-total").textContent = count;
+  // With printed labels (Cover, 1…28, Back cover) the total is the last numbered page.
+  const numbered = labels ? labels.filter((l) => /^\d+$/.test(l)) : [];
+  $("page-total").textContent = numbered.length ? numbered[numbered.length - 1] : count;
+  const name = (i) => (labels ? labels[i] : `${i + 1}`);
 
   const update = (index) => {
     const portrait = flip.getOrientation() === "portrait";
     // In landscape the cover is shown alone, then spreads of two.
     const label = !portrait && index > 0 && index < count - 1
-      ? `${index + 1}–${Math.min(index + 2, count)}`
-      : `${index + 1}`;
+      ? `${name(index)} – ${name(Math.min(index + 1, count - 1))}`
+      : name(index);
     cur.textContent = label;
     $("btn-first").disabled = $("btn-prev").disabled = index === 0;
     $("btn-last").disabled = $("btn-next").disabled = index >= count - (portrait ? 1 : 2);
@@ -118,6 +123,7 @@ function setupToolbar(flip, count) {
   const dl = $("btn-download");
   if (cfg.allowDownload && cfg.pdf) {
     dl.href = cfg.pdf;
+    if (cfg.downloadName) dl.download = cfg.downloadName;
     dl.hidden = false;
   }
 
@@ -132,7 +138,15 @@ async function init() {
 
   let source;
   try {
-    source = cfg.imagesManifest ? await loadImageSource(cfg.imagesManifest) : await loadPdfSource(cfg.pdf);
+    if (cfg.imagesManifest) {
+      try {
+        source = await loadImageSource(cfg.imagesManifest);
+      } catch (err) {
+        if (!cfg.pdf) throw err;
+        console.warn(`${err.message} — falling back to ${cfg.pdf}`);
+      }
+    }
+    source ??= await loadPdfSource(cfg.pdf);
   } catch (err) {
     console.error(err);
     showStatus(`Could not load the flipbook.<br><small>${err.message}</small><br><br>
@@ -177,7 +191,7 @@ async function init() {
   });
   flip.loadFromHTML(pages);
 
-  const update = setupToolbar(flip, source.count);
+  const update = setupToolbar(flip, source.count, source.labels);
   update(flip.getCurrentPageIndex());
   flip.on("flip", (e) => { update(e.data); preload(e.data); });
   flip.on("changeOrientation", () => update(flip.getCurrentPageIndex()));
