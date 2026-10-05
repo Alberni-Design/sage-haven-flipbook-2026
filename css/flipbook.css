@@ -41,7 +41,7 @@ html, body {
 
 .toolbar__nav { display: flex; align-items: center; gap: 4px; }
 .toolbar__actions { display: flex; gap: 4px; flex: 1 1 0; justify-content: flex-end; }
-.toolbar__count { min-width: 72px; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; }
+.toolbar__count { min-width: 72px; white-space: nowrap; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .toolbar button,
 .toolbar .btn {

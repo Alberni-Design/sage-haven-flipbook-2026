@@ -2,13 +2,13 @@
 window.FLIPBOOK_CONFIG = {
   title: "Sage Haven 2026",
 
-  // Source A (default): a PDF rendered in the browser with pdf.js.
-  pdf: "assets/flipbook.pdf",
+  // Primary source: pre-rendered WebP pages + manifest.json, built by
+  // `scripts/import-pages.sh <png-folder>` (or `scripts/pdf-to-images.sh <pdf>`).
+  imagesManifest: "assets/pages/manifest.json",
 
-  // Source B (faster on mobile): pre-rendered page images.
-  // Run `scripts/pdf-to-images.sh assets/flipbook.pdf` and set this to
-  // "assets/pages/manifest.json". When set, it takes precedence over `pdf`.
-  imagesManifest: null,
+  // The PDF behind the download button. Also used as the flipbook source
+  // (rendered in-browser with pdf.js) when the manifest above is missing.
+  pdf: "assets/flipbook.pdf",
 
   // Show the PDF download button in the toolbar.
   allowDownload: true,
