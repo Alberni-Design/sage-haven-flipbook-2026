@@ -62,6 +62,13 @@ js/config.js          settings
 js/flipbook.js        loader + StPageFlip wiring (lazy-renders ±3 pages around the current one)
 css/flipbook.css      styles
 assets/flipbook.pdf   your publication
-vendor/               page-flip 2.0.7, pdf.js 6.4.299 (legacy build, for older Safari/Chrome)
+vendor/               page-flip 2.0.7 (patched, see below), pdf.js 6.4.299 (legacy build, for older Safari/Chrome)
 scripts/              PNG → WebP importer, PDF → images converter
 ```
+
+## Vendored library patch
+
+`vendor/page-flip/page-flip.browser.js` carries one fix over upstream 2.0.7. In `drawHard()`, left-side hard pages
+(the inside covers) were positioned at `translate3d(0, 0, 0)` instead of `translate3d(rect.left, …)`. When the book
+is narrower than its container, that made the inside cover pivot left of the spine during the cover flip and snap
+right when the animation ended. Re-apply this change if the library is upgraded.
