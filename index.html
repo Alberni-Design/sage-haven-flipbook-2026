@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sage Haven 2026</title>
+  <meta name="description" content="Sage Haven 2026 flipbook">
+  <link rel="stylesheet" href="css/flipbook.css">
+</head>
+<body>
+  <header class="toolbar" role="toolbar" aria-label="Flipbook controls">
+    <h1 class="toolbar__title" id="book-title">Sage Haven 2026</h1>
+    <div class="toolbar__nav">
+      <button type="button" id="btn-first" aria-label="First page" title="First page">&#x23EE;</button>
+      <button type="button" id="btn-prev" aria-label="Previous page" title="Previous page">&#x25C0;</button>
+      <span class="toolbar__count" aria-live="polite"><span id="page-current">–</span> / <span id="page-total">–</span></span>
+      <button type="button" id="btn-next" aria-label="Next page" title="Next page">&#x25B6;</button>
+      <button type="button" id="btn-last" aria-label="Last page" title="Last page">&#x23ED;</button>
+    </div>
+    <div class="toolbar__actions">
+      <a id="btn-download" class="btn" href="#" download hidden aria-label="Download PDF" title="Download PDF">&#x2B07;</a>
+      <button type="button" id="btn-fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">&#x26F6;</button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="status" id="status" role="status">Loading…</div>
+    <div class="book" id="book" hidden></div>
+  </main>
+
+  <script src="vendor/page-flip/page-flip.browser.js"></script>
+  <script src="js/config.js"></script>
+  <script type="module" src="js/flipbook.js"></script>
+</body>
+</html>

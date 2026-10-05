@@ -1,0 +1,29 @@
+# Apache / cPanel settings for the flipbook.
+
+# ES modules must be served as JavaScript or browsers refuse to run them.
+AddType text/javascript .mjs
+AddType application/pdf .pdf
+AddType image/webp .webp
+AddType application/json .json
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType image/webp "access plus 1 week"
+  ExpiresByType image/jpeg "access plus 1 week"
+  ExpiresByType application/pdf "access plus 1 day"
+</IfModule>
+
+# Range requests let pdf.js stream large PDFs instead of downloading them whole.
+<IfModule mod_headers.c>
+  <FilesMatch "\.pdf$">
+    Header set Accept-Ranges bytes
+  </FilesMatch>
+</IfModule>
+
+Options -Indexes
