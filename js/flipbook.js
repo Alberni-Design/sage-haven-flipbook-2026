@@ -79,7 +79,7 @@ function pageFromHash(count) {
   return Math.min(Math.max(n, 1), count) - 1;
 }
 
-function setupToolbar(flip, count, labels) {
+function setupToolbar(flip, count, labels, beforeTurn = () => {}) {
   const cur = $("page-current");
   // With printed labels (Cover, 1…28, Back cover) the total is the last numbered page.
   const numbered = labels ? labels.filter((l) => /^\d+$/.test(l)) : [];
@@ -98,17 +98,26 @@ function setupToolbar(flip, count, labels) {
     history.replaceState(null, "", `#page=${index + 1}`);
   };
 
-  $("btn-first").onclick = () => flip.flip(0);
-  $("btn-prev").onclick = () => flip.flipPrev();
-  $("btn-next").onclick = () => flip.flipNext();
-  $("btn-last").onclick = () => flip.flip(count - 1);
+  // Destination of a one-step turn: spreads advance by 2 in landscape, 1 in portrait.
+  const step = () => (flip.getOrientation() === "portrait" ? 1 : 2);
+  const clamp = (i) => Math.min(Math.max(i, 0), count - 1);
+  const go = {
+    first: () => { beforeTurn(0); flip.flip(0); },
+    prev: () => { const i = flip.getCurrentPageIndex(); beforeTurn(i <= step() ? 0 : clamp(i - step())); flip.flipPrev(); },
+    next: () => { const i = flip.getCurrentPageIndex(); beforeTurn(i === 0 ? 1 : clamp(i + step())); flip.flipNext(); },
+    last: () => { beforeTurn(count - 1); flip.flip(count - 1); },
+  };
+  $("btn-first").onclick = go.first;
+  $("btn-prev").onclick = go.prev;
+  $("btn-next").onclick = go.next;
+  $("btn-last").onclick = go.last;
 
   document.addEventListener("keydown", (e) => {
     if (e.target.closest("input, textarea")) return;
-    if (e.key === "ArrowLeft" || e.key === "PageUp") flip.flipPrev();
-    else if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); flip.flipNext(); }
-    else if (e.key === "Home") flip.flip(0);
-    else if (e.key === "End") flip.flip(count - 1);
+    if (e.key === "ArrowLeft" || e.key === "PageUp") go.prev();
+    else if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); go.next(); }
+    else if (e.key === "Home") go.first();
+    else if (e.key === "End") go.last();
   });
 
   const fsBtn = $("btn-fullscreen");
@@ -191,10 +200,46 @@ async function init() {
   });
   flip.loadFromHTML(pages);
 
-  const update = setupToolbar(flip, source.count, source.labels);
+  const center = setupCentering(flip, source.count);
+  const update = setupToolbar(flip, source.count, source.labels, center.before);
   update(flip.getCurrentPageIndex());
-  flip.on("flip", (e) => { update(e.data); preload(e.data); });
-  flip.on("changeOrientation", () => update(flip.getCurrentPageIndex()));
+  flip.on("flip", (e) => { update(e.data); preload(e.data); center.to(e.data); });
+  flip.on("changeOrientation", () => { update(flip.getCurrentPageIndex()); center.to(flip.getCurrentPageIndex(), false); });
+}
+
+/**
+ * In spread view a closed book (front or back cover alone) occupies one half of the spread slot,
+ * leaving the other half empty. Slide it half a page so the cover sits centred, and slide back as
+ * the book opens. Pointer mapping stays correct: StPageFlip reads the block's client rect.
+ */
+function setupCentering(flip, count) {
+  const stage = $("stage");
+  const shiftFor = (index) => {
+    if (flip.getOrientation() !== "landscape") return 0;
+    const half = flip.getBoundsRect().pageWidth / 2;
+    if (index === 0) return -half;
+    if (index === count - 1 && count % 2 === 0) return half;
+    return 0;
+  };
+  const set = (px, animate = true) => {
+    stage.classList.toggle("is-shifting", animate);
+    stage.style.setProperty("--book-shift", `${px}px`);
+  };
+  const to = (index, animate = true) => set(shiftFor(index), animate);
+
+  // Opening a cover by drag/click: start sliding as soon as the page starts to move.
+  flip.on("changeState", (e) => {
+    if (e.data !== "user_fold" && e.data !== "flipping") return;
+    const i = flip.getCurrentPageIndex();
+    if (i === 0 || i === count - 1) set(0);
+  });
+  // Layout can change without a window resize (web font swap, fullscreen), so watch the stage.
+  // rAF: let StPageFlip apply its own resize first so pageWidth is current.
+  new ResizeObserver(() => requestAnimationFrame(() => to(flip.getCurrentPageIndex(), false))).observe(stage);
+  to(flip.getCurrentPageIndex(), false);
+
+  // Toolbar/keyboard know the destination up front, so closing the book slides in step with the flip.
+  return { to, before: (target) => to(target) };
 }
 
 init();

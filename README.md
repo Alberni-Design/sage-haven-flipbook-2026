@@ -47,6 +47,32 @@ Note: free GitHub plans only publish Pages from **public** repos.
 **cPanel** — upload the repo contents (including `.htaccess`) to `public_html/` or a subfolder, via File Manager or cPanel's Git Version Control.
 `.htaccess` serves `.mjs` with a JavaScript MIME type; without it, some Apache configs break pdf.js.
 
+## Embed in another website
+
+Inside an `<iframe>` (or with `?embed` in the URL) the page drops its header, title and footer and shows only
+the book, controls and download button on a transparent background:
+
+```html
+<iframe src="https://YOUR-FLIPBOOK-URL/?embed"
+        title="Sage Haven 2026 Annual Report"
+        style="width:100%; height:80vh; min-height:520px; border:0"
+        allow="fullscreen" loading="lazy"></iframe>
+```
+
+`allow="fullscreen"` is needed for the fullscreen button to work inside the frame.
+
+## Branding
+
+Follows the Sage Haven Brand Guidelines (2023-10-31): primary blue `#1D458A`, cyan `#1CC0DD` for hovers/accents,
+Noto Sans (self-hosted in `assets/fonts/`, SIL OFL).
+
+- `assets/brand/sage-haven-logo-original.svg` is the official logo file, unmodified.
+- `scripts/build-logos.py` derives the variants in `assets/brand/` from it (full, word mark + byline, icon mark,
+  and reverse/white versions). Paths are untouched; only the viewBox is cropped. The byline is live text in
+  Swiss 721 (a Helvetica design), so it falls back to Helvetica/Arial and is pinned to the word mark's width.
+- The header uses the word mark with byline at ≥50px tall so the byline stays readable; the icon mark sits in the
+  footer, away from the word mark, as the guidelines require.
+
 ## Usage
 
 - Click/drag page corners, arrow keys, PageUp/PageDown, Home/End
@@ -62,6 +88,8 @@ js/config.js          settings
 js/flipbook.js        loader + StPageFlip wiring (lazy-renders ±3 pages around the current one)
 css/flipbook.css      styles
 assets/flipbook.pdf   your publication
+assets/brand/         logo variants (see Branding)
+assets/fonts/         Noto Sans woff2
 vendor/               page-flip 2.0.7 (patched, see below), pdf.js 6.4.299 (legacy build, for older Safari/Chrome)
 scripts/              PNG → WebP importer, PDF → images converter
 ```
